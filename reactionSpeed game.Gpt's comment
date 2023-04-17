@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>반응속도</title>
+<style>
+  #screen {
+    width: 300px;
+    height: 200px;
+    text-align: center;
+    user-select: none;
+  }
+  #screen.waiting {
+    background-color: aqua;
+  }
+  #screen.ready {
+    background-color: red;
+    color: white;
+  }
+  #screen.now {
+    background-color: greenyellow;
+  }
+</style>
+</head>
+
+<body>
+<div id="screen" class="waiting">클릭해서 시작하세요</div>
+<div id="result"></div>
+<script>
+  // select the elements on the page that we want to interact with
+  const $screen = document.querySelector('#screen');
+  const $result = document.querySelector('#result');
+
+  // initialize some variables
+  let startTime;
+  let endTime;
+  const records = [];
+  let timeoutId;
+
+  // add a click event listener to the screen element
+  $screen.addEventListener('click', function () {
+    // if the screen is in waiting state (blue)
+    if ($screen.classList.contains('waiting')) {
+      $screen.classList.remove('waiting');
+      $screen.classList.add('ready');
+      $screen.textContent = '초록색이 되면 클릭하세요';
+      timeoutId = setTimeout(function () {
+        startTime = new Date();
+        $screen.classList.remove('ready');
+        $screen.classList.add('now');
+        $screen.textContent = '클릭하세요!';
+      }, Math.floor(Math.random() * 1000) + 2000); // random time between 2 to 3 seconds
+    } 
+    // if the screen is in ready state (red)
+    else if ($screen.classList.contains('ready')) {
+      clearTimeout(timeoutId);
+      $screen.classList.remove('ready');
+      $screen.classList.add('waiting');
+      $screen.textContent = '너무 성급하시군요!';
+    } 
+    // if the screen is in now state (green)
+    else if ($screen.classList.contains('now')) {
+      endTime = new Date();
+      const current = endTime - startTime;
+      records.push(current);
+      const average = records.reduce((a, c) => a + c) / records.length;
+      $result.textContent = `현재 ${current}ms, 평균: ${average}ms`;
+      const topFive = records.sort((p, c) => p - c).slice(0, 5);
+      topFive.forEach((top, index) => {
+        $result.append(
+          document.createElement('br'),
+          `${index + 1}위: ${top}ms`,
+        );
+      });
+      startTime = null;
+      endTime = null;
+      $screen.classList.remove('now');
+      $screen.classList.add('waiting');
+      $screen.textContent = '클릭해서 시작하세요';
+    }
+  });
+</script>
+</body>
+</html>
+
+
+
+
+
+// select the elements on the page that we want to interact with
+const $screen = document.querySelector('#screen');
+const $result = document.querySelector('#result');
+//The above lines are selecting elements from the HTML page. 
+$screen selects the div element with an id of screen, 
+and $result selects the div element with an id of result. These elements 
+will be used later on to display information to the user.
+
+
+
+
+// initialize some variables
+let startTime;
+let endTime;
+const records = [];
+let timeoutId;
+//These lines are initializing four variables: startTime, endTime, 
+records, and timeoutId. startTime and endTime will be used to track 
+the start and end times of the user's reaction time. records is an array 
+that will store the reaction times of the user, and timeoutId will 
+be used to track the timeout that starts the game.
+
+
+
+$screen.addEventListener('click', function () {
+  // if the screen is in waiting state (blue)
+  if ($screen.classList.contains('waiting')) {
+    $screen.classList.remove('waiting');
+    $screen.classList.add('ready');
+    $screen.textContent = '초록색이 되면 클릭하세요';
+    timeoutId = setTimeout(function () {
+      startTime = new Date();
+      $screen.classList.remove('ready');
+      $screen.classList.add('now');
+      $screen.textContent = '클릭하세요!';
+    }, Math.floor(Math.random() * 1000) + 2000); // random time between 2 to 3 seconds
+  } 
+  // if the screen is in ready state (red)
+  else if ($screen.classList.contains('ready')) {
+    clearTimeout(timeoutId);
+    $screen.classList.remove('ready');
+    $screen.classList.add('waiting');
+    $screen.textContent = '너무 성급하시군요!';
+  } 
+  // if the screen is in now state (green)
+  else if ($screen.classList.contains('now')) {
+    endTime = new Date();
+    const current = endTime - startTime;
+    records.push(current);
+    const average = records.reduce((a, c) => a + c) / records.length;
+    $result.textContent = `현재 ${current}ms, 평균: ${average}ms`;
+    const topFive = records.sort((p, c) => p - c).slice(0, 5);
+    topFive.forEach((top, index) => {
+      $result.append(
+        document.createElement('br'),
+        `${index + 1}위: ${top}ms`,
+      );
+    });
+    startTime = null;
+    endTime = null;
+    $screen.classList.remove('now');
+    $screen.classList.add('waiting');
+    $screen.textContent = '클릭해서 시작하세요';
+  }
+});
+//These lines add a click event listener to the $screen element. 
+Depending on the state of the screen element (waiting, ready, or now), 
+different actions are taken when the user clicks on the element.
+
+If the screen is in the waiting state, it will change to the ready state, 
+and display a message telling the user to wait until the screen turns green. 
+After a random time between 2 to 3 seconds, the screen will turn green, 
+and the user will be prompted to click the screen. At this point, 
+the startTime variable will be set to the current time.
+
+If the screen is in the ready state, it means the user clicked too early. 
+The timeout is cleared, and the screen is set back
